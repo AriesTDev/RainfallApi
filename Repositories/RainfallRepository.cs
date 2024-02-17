@@ -14,27 +14,40 @@ namespace Rainfall.Api.Repositories
 			_httpClient = httpClient;
 		}
 
-		public async Task<BaseResponse<RainfallReadingResponse>> GetRainfallByStationId(string stationId)
+		public async Task<BaseResponse<RainfallReadingResponse>> GetRainfallByStationId(string stationId, int count)
 		{
 			try
 			{
-				var uri = new Uri($"{_configuration["API:RainfallAPI"]}/id/stations/{stationId}/readings?_limit=1&_sorted&parameter=rainfall");
+				var limitFilter = count == 0 ? "" : $"&_limit={count}";
+				var uri = new Uri($"{_configuration["API:RainfallAPI"]}/id/stations/{stationId}/readings?_sorted&parameter=rainfall{limitFilter}");
 
 				var response = await _httpClient.GetAsync(uri);
 				response.EnsureSuccessStatusCode();
 
 				var responseBody = await response.Content.ReadAsStringAsync();
 
-				//todo: mapping of rainfall api response
+				var rainfallReadingResponse = JsonSerializer.Deserialize<RainfallReadingResponseDTO>(responseBody);
 
-				var rainfallReading = JsonSerializer.Deserialize<RainfallReadingResponse>(responseBody);
+				if(rainfallReadingResponse == null || !rainfallReadingResponse.Readings.Any())
+					return new BaseResponse<RainfallReadingResponse>
+					{
+						StatusCode = StatusCode.NotFound,
+						Result = new RainfallReadingResponse()
+					};
 
-				//todo: check if no readings found
+				var rainfallReadingResult = new RainfallReadingResponse
+				{
+					Readings = rainfallReadingResponse.Readings.Select(x => new RainfallReading
+					{
+						AmountMeasured = x.AmountMeasured,
+						DateMeasured = x.DateMeasured
+					}).ToList()
+				};
 
 				return new BaseResponse<RainfallReadingResponse>
 				{
 					StatusCode = StatusCode.Success,
-					Result = rainfallReading ?? new RainfallReadingResponse()
+					Result = rainfallReadingResult
 				};
 			}
 			catch (Exception ex)
@@ -44,7 +57,6 @@ namespace Rainfall.Api.Repositories
 					StatusCode = StatusCode.Error,
 					Message = "An error occurred while fetching rainfall data.",
 				};
-				//return new RainfallReadingResponse(); // StatusCode(500, new ErrorResponse { Message = "An error occurred while fetching rainfall data.", Detail = ex.Message });
 			}
 		}
 	}

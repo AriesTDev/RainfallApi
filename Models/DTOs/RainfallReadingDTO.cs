@@ -2,9 +2,11 @@
 
 namespace Rainfall.Api.Models
 {
-	public class RainfallReading
+	public class RainfallReadingDTO
 	{
+		[JsonPropertyName("dateTime")]
 		public DateTime DateMeasured { get; set; }
+		[JsonPropertyName("value")]
 		public decimal AmountMeasured { get; set; }
 	}
 }

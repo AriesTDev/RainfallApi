@@ -3,6 +3,8 @@
 	public enum StatusCode
 	{
 		Success = 100,
-		Error = 200,
+		Error = 101,
+		BadRequest = 102,
+		NotFound = 103
 	}
 }

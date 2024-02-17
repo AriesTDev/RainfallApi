@@ -8,7 +8,6 @@ namespace Rainfall.Api.Models
         {
 			Readings = new List<RainfallReading>();
 		}
-		[JsonPropertyName("items")]
 		public List<RainfallReading> Readings { get; set; }
 	}
 }
