@@ -16,8 +16,22 @@ namespace Rainfall.Api.Controllers
 			_rainfallRepository = rainfallRepository;
 		}
 
+		/// <summary>
+		/// Get rainfall readings by station Id
+		/// </summary>
+		/// <description>
+		/// Retrieve the latest readings for the specified stationId
+		/// </description>
+		/// <response code="200">Returns a list of rainfall readings.</response>
+		/// <response code="400">Invalid request. The request parameters are not valid.</response>
+		/// <response code="404">No readings found for the specified stationId.</response>
+		/// <response code="500">Internal server error.</response>
 		[HttpGet("id/{stationId}/readings")]
 		[CustomBadRequest]
+		[ProducesResponseType(typeof(RainfallReadingResponse), 200)]
+		[ProducesResponseType(typeof(Error), 400)]
+		[ProducesResponseType(typeof(Error), 404)]
+		[ProducesResponseType(typeof(Error), 500)]
 		public async Task<IActionResult> GetRainfallByStationId([FromRoute]string stationId, [FromQuery] int count)
 		{
 			try
