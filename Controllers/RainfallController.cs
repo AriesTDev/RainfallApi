@@ -19,13 +19,16 @@ namespace Rainfall.Api.Controllers
 		/// <summary>
 		/// Get rainfall readings by station Id
 		/// </summary>
-		/// <description>
-		/// Retrieve the latest readings for the specified stationId
-		/// </description>
-		/// <response code="200">Returns a list of rainfall readings.</response>
-		/// <response code="400">Invalid request. The request parameters are not valid.</response>
-		/// <response code="404">No readings found for the specified stationId.</response>
-		/// <response code="500">Internal server error.</response>
+		/// <param name="stationId">The id of the reading station</param>
+		/// <param name="count">The number of readings to return</param>
+		/// <returns> Retrieve the latest readings for the specified stationId</returns>
+		/// <remarks>
+		/// The API returns the following status codes:
+		/// - 200: A list of rainfall readings successfully retrieved
+		/// - 400: Invalid request 
+		/// - 404: No readings found for the specified stationId
+		/// - 500: Internal server error
+		/// </remarks>
 		[HttpGet("id/{stationId}/readings")]
 		[CustomBadRequest]
 		[ProducesResponseType(typeof(RainfallReadingResponse), 200)]
