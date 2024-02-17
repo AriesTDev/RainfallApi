@@ -1,4 +1,6 @@
-﻿namespace Rainfall.Api.Models
+﻿using System.Text.Json.Serialization;
+
+namespace Rainfall.Api.Models
 {
 	public class RainfallReadingResponse
 	{
@@ -6,6 +8,7 @@
         {
 			Readings = new List<RainfallReading>();
 		}
-        public List<RainfallReading> Readings { get; set; }
+		[JsonPropertyName("items")]
+		public List<RainfallReading> Readings { get; set; }
 	}
 }

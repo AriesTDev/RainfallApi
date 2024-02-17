@@ -1,35 +1,39 @@
 using Microsoft.AspNetCore.Mvc;
-using Rainfall.Api.Models;
+using Rainfall.Api.Repositories;
 
 namespace Rainfall.Api.Controllers
 {
 	[ApiController]
-	[Route("[controller]")]
+	[Route("[controller]/v1")]
 	public class RainfallController : ControllerBase
 	{
-		private static readonly Dictionary<int, List<RainfallReading>> StationReadings = new Dictionary<int, List<RainfallReading>>
-		{
-			{ 1, new List<RainfallReading> { new RainfallReading { DateMeasured = DateTime.Now.AddDays(-1), AmountMeasured = 10.5m } } },
-			{ 2, new List<RainfallReading> { new RainfallReading { DateMeasured = DateTime.Now.AddDays(-1), AmountMeasured = 5.2m } } }
-		};
 
-		private readonly ILogger<RainfallController> _logger;
-
-		public RainfallController(ILogger<RainfallController> logger)
+		private readonly IRainfallRepository _rainfallRepository;
+		public RainfallController(IRainfallRepository rainfallRepository)
 		{
-			_logger = logger;
+			_rainfallRepository = rainfallRepository;
 		}
 
 		[HttpGet("{stationId}")]
-		public IActionResult Get(int stationId)
+		public async Task<IActionResult> GetRainfallByStationId(string stationId)
 		{
-			if (!StationReadings.ContainsKey(stationId))
+			try
 			{
-				return NotFound(new { Message = "No readings found for the specified stationId" });
-			}
+				var result = await _rainfallRepository.GetRainfallByStationId(stationId);
 
-			var readings = StationReadings[stationId];
-			return Ok(new RainfallReadingResponse { Readings = readings });
+				switch (result.StatusCode)
+				{
+					case Enums.StatusCode.Success:
+						return Ok(result.Result);
+					default:
+						return BadRequest(result);
+				}
+
+			}
+			catch (HttpRequestException ex)
+			{
+				return StatusCode(500, new { Message = "An error occurred while fetching rainfall data.", Detail = ex.Message });
+			}
 		}
 	}
 }
