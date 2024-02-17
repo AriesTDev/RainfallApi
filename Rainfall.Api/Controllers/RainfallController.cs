@@ -48,7 +48,7 @@ namespace Rainfall.Api.Controllers
 					case Enums.StatusCode.NotFound:
 						return NotFound(new Error { Message = "No readings found for the specified stationId", Detail = new List<List<ErrorDetail>>() });
 					case Enums.StatusCode.Error:
-						return NotFound(new Error { Message = "AnInternal server error", Detail = new List<List<ErrorDetail>>() });
+						return NotFound(new Error { Message = "Internal server error", Detail = new List<List<ErrorDetail>>() });
 					default:
 						return BadRequest(new Error { Message = result.Message, Detail = new List<List<ErrorDetail>>() });
 				}
